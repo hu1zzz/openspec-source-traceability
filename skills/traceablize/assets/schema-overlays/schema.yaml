@@ -1,0 +1,24 @@
+name: traceable-spec-driven
+description: Traceable workflow - source requirements → proposal → specs → reconciliation → design → tasks
+source_artifact:
+  id: source-requirements
+  generates: source-requirements.yaml
+  description: 原始需求基线，以及原始需求到 Spec Requirement 的映射
+  template: source-requirements.yaml
+  instruction: |
+    创建原始需求基线，确保需求在生成 Spec 前已被完整登记。
+
+    - 先扫描 openspec/specs/**/*.md 中的 Requirement id/sources，建立当前主规范覆盖基线。
+    - 对比当前文档与主规范基线，只登记新增需求和 Revision 已变化的需求。
+    - 主规范中相同 ID、相同 Revision 的来源无需重复登记。
+    - 提取本次需处理的源需求并保留原始 ID、修订号和标题。
+    - 原文没有稳定 ID 时，按文档顺序分配 SRC-001、SRC-002 等稳定 ID。
+    - 初次创建统一使用 status: pending 和 specs: []，不要提前猜测 Spec ID。
+    - 主规范未覆盖且本次未登记的需求不得静默忽略；冲突和不适用需求也必须登记。
+    - 使用模板中的中文文件头和状态定义。
+    - 记录源文档路径、版本，以及可获得时的 SHA-256。
+requires_overrides:
+  proposal: [source-requirements]
+  specs: [proposal, source-requirements]
+  design: [proposal, specs, source-requirements]
+  tasks: [specs, design, source-requirements]

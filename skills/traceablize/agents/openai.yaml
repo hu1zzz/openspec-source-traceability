@@ -1,0 +1,4 @@
+interface:
+  display_name: "Traceablize"
+  short_description: "生成三个可追溯 OpenSpec 工作流 skill"
+  default_prompt: "使用 $traceablize 在此 OpenSpec 项目中重新生成可追溯的 propose、sync-specs 和 verify-with-report skill。"

@@ -5,6 +5,7 @@ An OpenSpec workflow extension and desktop GUI for validating bidirectional trac
 ## What is included
 
 - `openspec/schemas/traceable-spec-driven/`: a schema and templates that add the `source-requirements.yaml` artifact.
+- `skills/traceablize/`: a Chinese-first installer skill with an English companion guide; it regenerates the traceable OpenSpec skills from the target project's official skills.
 - `src/validate_source_traceability.py`: command-line validator and Markdown report generator.
 - `src/traceability_report_gui.py`: Tkinter desktop GUI for running the validator.
 - `examples/demo-project/`: synthetic source requirements and OpenSpec artifacts.
