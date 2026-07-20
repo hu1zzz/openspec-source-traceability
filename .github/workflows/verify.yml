@@ -35,7 +35,7 @@ jobs:
           import sys
 
           forbidden = re.compile(r"物联管理|protocol-management|SwRS-(?:3588|3598)|需求追踪验证工具\.exe|C:\\Users\\85378|E:\\文档")
-          ignored = {".git"}
+          ignored = {".git", ".github"}
           matches = []
           for path in Path('.').rglob('*'):
               if not path.is_file() or any(part in ignored for part in path.parts):
