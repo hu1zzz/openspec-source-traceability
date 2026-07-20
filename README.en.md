@@ -4,6 +4,18 @@
 
 This repository extends an OpenSpec workflow without replacing official skills. Install and invoke `traceablize`; it derives traceability-aware skills from the target project's official skills and adds source-to-Spec evidence tracking.
 
+## What is OpenSpec, and what does this add?
+
+[OpenSpec](https://openspec.pro/) is a lightweight spec-driven development framework for human and AI collaboration. A change is reviewed as a proposal, behavioral specs, technical design, and implementation tasks before code is written. This repository preserves that workflow and adds an auditable question that the base workflow does not require: which source requirement and revision led to each Spec Requirement, and what evidence supports its implementation?
+
+The added traceability chain is:
+
+```text
+source requirements <-> source-requirements.yaml <-> Spec Requirements
+                                                    ↓
+                                   tasks / code / tests / verification report
+```
+
 ## Workflow
 
 1. Initialize a normal OpenSpec project.
