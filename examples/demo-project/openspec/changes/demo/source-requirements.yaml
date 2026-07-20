@@ -1,0 +1,16 @@
+source:
+  document: requirements.md
+  revision: demo-v1
+
+requirements:
+  - id: SwRS-100
+    revision: 1
+    title: Demo catalogue query
+    status: mapped
+    specs: [REQ-DEMO-001]
+  - id: SwRS-200
+    revision: 1
+    title: Demo notification
+    status: excluded
+    specs: []
+    reason: Demonstrates an explicit scope decision.

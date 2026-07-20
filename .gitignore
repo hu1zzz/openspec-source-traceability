@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+.venv/
+需求追踪验证报告.md
+*.exe
