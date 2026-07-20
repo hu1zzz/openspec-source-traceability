@@ -16,6 +16,8 @@ source requirements <-> source-requirements.yaml <-> Spec Requirements
                                    tasks / code / tests / verification report
 ```
 
+For newly handled source requirements, the workflow also records independently testable `acceptancePoints`. A source is `mapped` only when every acceptance point links to an exact Requirement and named Scenario.
+
 ## Workflow
 
 1. Initialize a normal OpenSpec project.

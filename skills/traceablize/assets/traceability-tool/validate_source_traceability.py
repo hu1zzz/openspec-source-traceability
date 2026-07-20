@@ -209,6 +209,20 @@ def validate_change(project_root: Path, change_name: str) -> Report:
         specs = entry.get("specs") or []
         if status == "mapped" and not specs:
             report.issues.append(Issue("MAPPED_WITHOUT_SPEC", f"{source_id} 标记 mapped，但没有关联 Spec"))
+        points = entry.get("acceptancePoints")
+        if status == "mapped" and points is None:
+            report.issues.append(Issue("MAPPED_ACCEPTANCE_POINTS_MISSING", f"{source_id} 标记 mapped，但缺少 acceptancePoints 验收点清单"))
+        if points is not None:
+            if not isinstance(points, list) or not points:
+                report.issues.append(Issue("ACCEPTANCE_POINTS_INVALID", f"{source_id} 的 acceptancePoints 必须为非空列表"))
+            else:
+                for point in points:
+                    point_id = str(point.get("id") or "<未命名>") if isinstance(point, dict) else "<无效条目>"
+                    if not isinstance(point, dict) or not point.get("text"):
+                        report.issues.append(Issue("ACCEPTANCE_POINT_INVALID", f"{source_id} 的 {point_id} 缺少 text"))
+                        continue
+                    if status == "mapped" and (point.get("status") != "mapped" or not point.get("specs") or not point.get("scenarios")):
+                        report.issues.append(Issue("MAPPED_POINT_INCOMPLETE", f"{source_id} 标记 mapped，但验收点 {point_id} 未关联 Spec 和 Scenario"))
         if status in {"pending", "conflict"}:
             report.issues.append(Issue("STATUS_INCOMPLETE", f"{source_id} 状态为 {status}，需求转换尚未完成"))
         if status == "partial" and (not entry.get("uncovered") or not entry.get("reason")):

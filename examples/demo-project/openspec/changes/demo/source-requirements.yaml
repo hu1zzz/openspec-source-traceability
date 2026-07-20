@@ -8,6 +8,12 @@ requirements:
     title: Demo catalogue query
     status: mapped
     specs: [REQ-DEMO-001]
+    acceptancePoints:
+      - id: ACP-SwRS-100-001
+        text: Return a filtered catalogue.
+        status: mapped
+        specs: [REQ-DEMO-001]
+        scenarios: [Query succeeds]
   - id: SwRS-200
     revision: 1
     title: Demo notification

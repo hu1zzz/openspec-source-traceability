@@ -49,6 +49,12 @@ requirements:
     title: 协议管理接口
     status: mapped
     specs: [REQ-DEMO-001]
+    acceptancePoints:
+      - id: ACP-SwRS-100-001
+        text: 返回协议列表
+        status: mapped
+        specs: [REQ-DEMO-001]
+        scenarios: [查询成功]
   - id: SwRS-200
     revision: 5
     title: 插件变更通知
@@ -95,6 +101,12 @@ requirements:
     title: 协议管理接口
     status: mapped
     specs: [REQ-DEMO-001]
+    acceptancePoints:
+      - id: ACP-SwRS-100-001
+        text: 返回协议列表
+        status: mapped
+        specs: [REQ-DEMO-001]
+        scenarios: [查询成功]
 """
         spec_text = """
 <!--
@@ -116,6 +128,37 @@ sources:
         self.assertFalse(report.passed)
         self.assertTrue(any(i.code == "SRC_MISSING" and "SwRS-200" in i.message for i in report.issues))
 
+    def test_mapped_requirement_requires_complete_acceptance_points(self):
+        yaml_text = """
+source:
+  document: requirements.md
+  revision: v1
+requirements:
+  - id: SwRS-100
+    revision: 3
+    title: 协议管理接口
+    status: mapped
+    specs: [REQ-DEMO-001]
+"""
+        spec_text = """
+<!--
+id: REQ-DEMO-001
+sources: [SwRS-100@3]
+-->
+### Requirement: 查询协议
+系统 SHALL 返回协议列表。
+#### Scenario: 查询成功
+- **WHEN** 用户查询
+- **THEN** 返回列表
+"""
+        temp, root = self.make_change(yaml_text, spec_text)
+        self.addCleanup(temp.cleanup)
+
+        report = validate_change(root, "demo")
+
+        self.assertFalse(report.passed)
+        self.assertTrue(any(i.code == "MAPPED_ACCEPTANCE_POINTS_MISSING" for i in report.issues))
+
     def test_reports_reverse_link_and_revision_mismatch(self):
         yaml_text = """
 source:
@@ -127,6 +170,12 @@ requirements:
     title: 协议管理接口
     status: mapped
     specs: [REQ-DEMO-001]
+    acceptancePoints:
+      - id: ACP-SwRS-100-001
+        text: 返回协议列表
+        status: mapped
+        specs: [REQ-DEMO-001]
+        scenarios: [查询成功]
   - id: SwRS-200
     revision: 5
     title: 插件变更通知
@@ -167,11 +216,23 @@ requirements:
     title: 协议管理接口
     status: mapped
     specs: [REQ-DEMO-001]
+    acceptancePoints:
+      - id: ACP-SwRS-100-001
+        text: 返回协议列表
+        status: mapped
+        specs: [REQ-DEMO-001]
+        scenarios: [查询成功]
   - id: SwRS-200
     revision: 5
     title: 插件变更通知
     status: mapped
     specs: [REQ-DEMO-002]
+    acceptancePoints:
+      - id: ACP-SwRS-200-001
+        text: 通知节点
+        status: mapped
+        specs: [REQ-DEMO-002]
+        scenarios: [通知成功]
 """
         spec_text = """
 <!--
@@ -282,6 +343,12 @@ requirements:
     title: 协议管理接口
     status: mapped
     specs: [REQ-DEMO-001]
+    acceptancePoints:
+      - id: ACP-SwRS-100-001
+        text: 返回协议列表
+        status: mapped
+        specs: [REQ-DEMO-001]
+        scenarios: [查询成功]
 """
         current_spec = """
 <!--

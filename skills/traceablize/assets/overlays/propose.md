@@ -33,6 +33,18 @@ Keep all compatible behavior from the official propose workflow.
    revision-modified, or content-modified requirements. Preserve source IDs, revisions,
    and content hashes. Initial entries use `status: pending` and `specs: []`. The
    Chinese file header must document every permitted status and change type.
+
+   For every newly handled source requirement, extract an **acceptance-point inventory**
+   before writing Specs. Each independently testable API route, request/response field,
+   filter, state transition, deletion policy, validation rule, persistence rule, table
+   row, or bullet becomes one stable `ACP-<source-id>-NNN` point. Do not collapse a
+   detailed table into a single generic Requirement.
+
+   Record each point in `source-requirements.yaml` with `id`, `text`, `status`, `specs`,
+   and `scenarios`. `mapped` is permitted only when every acceptance point is mapped to
+   exact `REQ-*` IDs and named `#### Scenario:` headings. Otherwise the source requirement
+   MUST be `partial`, with every unmapped point listed in `uncovered` and a reason. The
+   post-Spec reconciliation must check this point-level matrix in both directions.
 4. Put metadata immediately before every Spec Requirement heading:
 
    ```markdown
@@ -57,3 +69,6 @@ Keep all compatible behavior from the official propose workflow.
    If the verified, user-authorized inventory has no in-scope added or modified
    requirements, stop as a no-op and report that no OpenSpec change is needed; do not
    report the change as implementation-ready.
+10. Before tasks are written, produce a coverage report that lists every source
+    requirement and its acceptance-point totals (`mapped`, `uncovered`, `conflict`). A
+    source-ID link alone is not evidence of semantic coverage.
