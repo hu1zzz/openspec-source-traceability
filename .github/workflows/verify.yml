@@ -1,0 +1,52 @@
+name: Verify public workflow package
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install validator dependency
+        run: python -m pip install -r requirements.txt
+
+      - name: Run unit and installer end-to-end tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Run the synthetic OpenSpec example
+        run: python src/validate_source_traceability.py --project-root examples/demo-project --change demo
+
+      - name: Reject known private-project markers
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          forbidden = re.compile(r"物联管理|protocol-management|SwRS-(?:3588|3598)|需求追踪验证工具\.exe|C:\\Users\\85378|E:\\文档")
+          ignored = {".git"}
+          matches = []
+          for path in Path('.').rglob('*'):
+              if not path.is_file() or any(part in ignored for part in path.parts):
+                  continue
+              try:
+                  content = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              if forbidden.search(content):
+                  matches.append(str(path))
+          if matches:
+              print('Private-project markers found:', *matches, sep='\n')
+              sys.exit(1)
+          PY
