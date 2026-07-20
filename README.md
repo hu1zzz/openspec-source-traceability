@@ -1,39 +1,117 @@
-# OpenSpec Source Traceability
+# OpenSpec 来源需求追踪工作流
 
-An OpenSpec workflow extension and desktop GUI for validating bidirectional traceability between a source requirements document, `source-requirements.yaml`, and OpenSpec Requirements.
+[English README](README.en.md)
 
-## What is included
+这是一个对 OpenSpec 的工作流扩展：它不改写官方 skill，而是通过 `traceablize` 从目标项目现有的官方 skill 动态派生可追溯版本，并为来源需求、Spec、验证证据建立双向追踪。
 
-- `openspec/schemas/traceable-spec-driven/`: a schema and templates that add the `source-requirements.yaml` artifact.
-- `skills/traceablize/`: a Chinese-first installer skill with an English companion guide; it regenerates the traceable OpenSpec skills from the target project's official skills.
-- `src/validate_source_traceability.py`: command-line validator and Markdown report generator.
-- `src/traceability_report_gui.py`: Tkinter desktop GUI for running the validator.
-- `examples/demo-project/`: synthetic source requirements and OpenSpec artifacts.
-- `tests/`: unit tests for the validator and GUI discovery logic.
+## 先理解完整流程
 
-## Privacy boundary
+```text
+初始化普通 OpenSpec 项目
+        ↓
+安装并调用 $traceablize
+        ↓
+生成 3 个追踪增强 skill、Schema 和校验工具
+        ↓
+按常规 OpenSpec 生命周期工作
+（仅在 propose / sync / verify 阶段改用增强 skill）
+```
 
-This repository contains only synthetic examples. Do not commit real requirements documents, source identifiers, revisions, reports, mappings, environment data, or generated executables to a public repository.
+## 产物与职责
 
-## Quick start
+执行 `$traceablize` 后，目标项目会获得：
+
+| 产物 | 用途 |
+|---|---|
+| `openspec-traceable-propose` | 创建 change 时提取来源需求、生成稳定 `REQ-*` ID，并完成 YAML 与 Spec 双向对账。 |
+| `openspec-traceable-sync-specs` | 将 delta Spec 同步到主 Spec 时保留来源 ID、Revision 和双向映射。 |
+| `openspec-verify-with-report` | 核查任务、Requirement、Scenario、测试和环境证据，并生成持久化验证报告。 |
+| `openspec/schemas/traceable-spec-driven/` | 含 `source-requirements.yaml` 工件的追踪 Schema；安装器会将其设为项目 Schema。 |
+| `需求追踪验证工具/` | Python 命令行校验器和 Tkinter GUI 源码。 |
+
+官方的 `openspec-propose`、`openspec-sync-specs`、`openspec-verify-change` 不会被覆盖。
+
+## 安装
+
+### 1. 准备普通 OpenSpec 项目
+
+先按 OpenSpec 的常规方式初始化项目。目标项目应已有：
+
+```text
+.codex/skills/openspec-propose/SKILL.md
+.codex/skills/openspec-sync-specs/SKILL.md
+.codex/skills/openspec-verify-change/SKILL.md
+openspec/
+```
+
+### 2. 安装 `traceablize` 入口 skill
+
+克隆本仓库后，将入口 skill 复制到目标项目：
+
+```powershell
+Copy-Item "<本仓库>\skills\traceablize" `
+  "<目标项目>\.codex\skills\traceablize" -Recurse -Force
+```
+
+### 3. 在目标项目中调用 `$traceablize`
+
+让支持 Codex skill 的代理执行 `$traceablize`；它会运行随附安装器。也可以直接运行：
+
+```powershell
+python "<目标项目>\.codex\skills\traceablize\scripts\install_traceable_skills.py" `
+  --project-root "<目标项目>"
+```
+
+默认会生成三个增强 skill、追踪 Schema 和校验工具。安装器可重复执行；每次都会重新读取目标项目当前的官方 skill，以继承上游更新。
+
+### 4. 安装校验器依赖
+
+```powershell
+python -m pip install -r "<目标项目>\需求追踪验证工具\requirements.txt"
+```
+
+## 日常使用
+
+| OpenSpec 阶段 | 使用方式 |
+|---|---|
+| 创建 change、proposal、Spec、tasks | 使用 `openspec-traceable-propose`。 |
+| 实现 tasks | 继续使用常规 `openspec-apply-change`。 |
+| 同步 delta Spec | 使用 `openspec-traceable-sync-specs`。 |
+| 验证覆盖、实现和归档就绪度 | 使用 `openspec-verify-with-report`。 |
+| 归档 | 继续使用常规 `openspec-archive-change`。 |
+
+来源追踪校验也可单独运行：
+
+```powershell
+python "<目标项目>\需求追踪验证工具\validate_source_traceability.py" `
+  --project-root "<目标项目>" `
+  --change <change名称>
+```
+
+GUI：
+
+```powershell
+python "<目标项目>\需求追踪验证工具\traceability_report_gui.py"
+```
+
+## 仓库结构
+
+```text
+skills/traceablize/             # 入口 skill：中文主说明，英文辅助说明
+openspec/schemas/               # 可追溯 Schema 与模板
+src/                            # 独立校验器和 GUI 源码
+examples/demo-project/          # 完全合成的演示项目
+tests/                          # 校验器与 GUI 的单元测试
+```
+
+## 隐私与发布边界
+
+本仓库只包含合成示例。请勿将真实需求文档、来源标识、版本、映射、验证报告、环境数据、业务代码或打包 EXE 上传到公开仓库。校验报告会包含目标项目的来源标识和标题，分享前必须人工审查。
+
+## 开发验证
 
 ```powershell
 python -m pip install -r requirements.txt
-python src/validate_source_traceability.py --project-root examples/demo-project --change demo
-python src/traceability_report_gui.py
 python -m unittest discover -s tests -v
+python src/validate_source_traceability.py --project-root examples/demo-project --change demo
 ```
-
-The GUI lets you select any project directory containing `openspec/`, select a change with `source-requirements.yaml`, and generate a Markdown report.
-
-## Traceability contract
-
-1. Assign every source requirement a stable identifier and revision.
-2. Give every OpenSpec Requirement a stable `REQ-*` identifier in an HTML comment immediately before its heading.
-3. Maintain links in both directions: source YAML `specs` and Spec metadata `sources`.
-4. Use explicit statuses (`pending`, `mapped`, `partial`, `excluded`, `not-applicable`, `conflict`) rather than silently omitting requirements.
-5. Treat structure validation, source coverage, code tests, integration tests, and production validation as separate evidence layers.
-
-## Security note
-
-The validator reads local files selected by the user and writes a report to the specified project directory. Review reports before sharing them because they can contain source identifiers and titles from your own project.
