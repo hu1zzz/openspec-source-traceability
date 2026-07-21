@@ -23,8 +23,9 @@ For newly handled source requirements, the workflow also records independently t
 1. Initialize a normal OpenSpec project.
 2. Copy `skills/traceablize/` into `<project>/.codex/skills/traceablize/`.
 3. Invoke `$traceablize`, or run its installer script.
-4. Use the generated `openspec-traceable-propose`, `openspec-traceable-sync-specs`, and `openspec-verify-with-report` skills in place of the corresponding propose, sync, and verify stages.
-5. Continue using normal `openspec-apply-change` and `openspec-archive-change` for implementation and archival.
+4. For a large, cross-module, or structurally inconsistent document, optionally run `requirement-packaging`; otherwise go directly to `openspec-traceable-propose`.
+5. Use the generated `openspec-traceable-propose`, `openspec-traceable-sync-specs`, and `openspec-verify-with-report` skills in place of the corresponding propose, sync, and verify stages.
+6. Continue using normal `openspec-apply-change` and `openspec-archive-change` for implementation and archival.
 
 The installer also deploys an optional `requirement-packaging` helper, the `traceable-spec-driven` schema, and a Python CLI validator and Tkinter GUI under `需求追踪验证工具/`. Packaging is not part of the default lifecycle: use it only for large, cross-module, or structurally inconsistent documents. Small, clear documents go straight to `openspec-traceable-propose`. When packaging is used, review `validation-report.md` and `unresolved-items.md`, then process executable `input.md` files in `manifest.yaml` dependency order, completing a full lifecycle for one package before its dependents.
 

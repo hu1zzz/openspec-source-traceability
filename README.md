@@ -22,6 +22,7 @@
 
 | 阶段 | OpenSpec 的作用 | 本项目增加的作用 | 为什么需要它 |
 |---|---|---|---|
+| 需求分块（可选） | 标准流程以一个 change 为单位推进，不规定如何处理超大输入文档。 | 对大型、跨模块或结构/编号不一致的来源文档，先按可独立交付的业务能力拆成工作包，并记录边界、依赖和待确认项。小型且结构清晰的文档跳过此步。 | 避免一次 propose 读取过多无关内容；同时不把仅按页数切开的片段误当成可独立实施的需求。 |
 | Proposal | 明确变更原因、范围和影响面。 | 登记本次新增或修订的来源需求。 | 先确认“为什么做、哪些需求在范围内”，避免漏项。 |
 | Specs | 用 Requirement 与 Scenario 定义应有行为。 | 为每条 Requirement 分配稳定 `REQ-*` ID，并写入来源 ID 与 Revision。 | 需求标题可以改，但稳定 ID 和来源版本可用于追溯影响。 |
 | 验收点对账 | 标准流程不强制拆分来源内部义务。 | 每条新增或修订来源需求拆成 `acceptancePoints`；每点必须映射到 Requirement 和命名 Scenario。 | 防止详细表格、字段或约束只覆盖一部分却被误判为完整覆盖。 |
@@ -36,13 +37,15 @@
         ↓
 安装并调用 $traceablize
         ↓
-生成 3 个追踪增强 skill、Schema 和校验工具
+生成 3 个追踪增强 skill、Schema、校验工具和分块 skill
+        ↓
+需求文档是否大型、跨模块或结构不一致？
+   ├─ 是：可选运行 requirement-packaging，逐包进入 propose
+   └─ 否：直接进入 traceable-propose
         ↓
 按常规 OpenSpec 生命周期工作
 （仅在 propose / sync / verify 阶段改用增强 skill）
 ```
-
-对于大型、跨模块或结构不一致的需求文档，可在 `traceable-propose` 前**可选地**运行 `requirement-packaging`；小型且结构清晰的文档无需分块，直接进入 `traceable-propose`。
 
 ## 产物与职责
 
