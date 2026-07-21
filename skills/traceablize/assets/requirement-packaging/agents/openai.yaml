@@ -1,0 +1,4 @@
+interface:
+  display_name: "需求工作包分块"
+  short_description: "将大型需求文档拆成可追溯的 OpenSpec 工作包"
+  default_prompt: "Use $requirement-packaging to split this requirement document into executable traceable work packages."

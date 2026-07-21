@@ -26,7 +26,7 @@ For newly handled source requirements, the workflow also records independently t
 4. Use the generated `openspec-traceable-propose`, `openspec-traceable-sync-specs`, and `openspec-verify-with-report` skills in place of the corresponding propose, sync, and verify stages.
 5. Continue using normal `openspec-apply-change` and `openspec-archive-change` for implementation and archival.
 
-The installer also deploys the `traceable-spec-driven` schema plus a Python CLI validator and Tkinter GUI under `需求追踪验证工具/`.
+The installer also deploys an optional `requirement-packaging` helper, the `traceable-spec-driven` schema, and a Python CLI validator and Tkinter GUI under `需求追踪验证工具/`. Packaging is not part of the default lifecycle: use it only for large, cross-module, or structurally inconsistent documents. Small, clear documents go straight to `openspec-traceable-propose`. When packaging is used, review `validation-report.md` and `unresolved-items.md`, then process executable `input.md` files in `manifest.yaml` dependency order, completing a full lifecycle for one package before its dependents.
 
 ## Installation
 
@@ -44,4 +44,4 @@ The project must already contain its official OpenSpec propose, sync-specs, and 
 
 ## Privacy
 
-Only synthetic examples are included. Never publish real requirement documents, source identifiers, mappings, generated reports, environment data, application code, or executables without a separate sanitization review.
+Only synthetic examples are included. Never publish real requirement documents, source identifiers, mappings, generated reports, environment data, application code, or executables without a separate sanitization review. Packaging outputs (`input.md`, `package.yaml`, `manifest.yaml`, `validation-report.md`, and `unresolved-items.md`) retain source text, filenames, line locations, hashes, source IDs, and revisions; do not publish them without a separate sanitization review.

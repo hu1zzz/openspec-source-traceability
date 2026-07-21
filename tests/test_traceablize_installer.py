@@ -48,13 +48,14 @@ class TraceablizeInstallerTest(unittest.TestCase):
             finally:
                 installer.resolve_official_schema = original_resolver
 
-            self.assertEqual(result["count"], 3)
+            self.assertEqual(result["count"], 4)
             self.assertTrue(result["toolInstalled"])
             self.assertEqual((root / "openspec" / "config.yaml").read_text(encoding="utf-8"), "schema: traceable-spec-driven\n")
             for name in (
                 "openspec-traceable-propose",
                 "openspec-traceable-sync-specs",
                 "openspec-verify-with-report",
+                "requirement-packaging",
             ):
                 self.assertTrue((skills / name / "SKILL.md").is_file())
             self.assertTrue((root / "openspec" / "schemas" / "traceable-spec-driven" / "schema.yaml").is_file())

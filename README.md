@@ -42,6 +42,8 @@
 （仅在 propose / sync / verify 阶段改用增强 skill）
 ```
 
+对于大型、跨模块或结构不一致的需求文档，可在 `traceable-propose` 前**可选地**运行 `requirement-packaging`；小型且结构清晰的文档无需分块，直接进入 `traceable-propose`。
+
 ## 产物与职责
 
 执行 `$traceablize` 后，目标项目会获得：
@@ -51,6 +53,7 @@
 | `openspec-traceable-propose` | 创建 change 时提取来源需求、生成稳定 `REQ-*` ID，并完成 YAML 与 Spec 双向对账。 |
 | `openspec-traceable-sync-specs` | 将 delta Spec 同步到主 Spec 时保留来源 ID、Revision 和双向映射。 |
 | `openspec-verify-with-report` | 核查任务、Requirement、Scenario、测试和环境证据，并生成持久化验证报告。 |
+| `requirement-packaging` | 可选前置工具：将大型或结构复杂的来源文档整理为可独立执行的工作包；不是日常必经步骤。 |
 | `openspec/schemas/traceable-spec-driven/` | 含 `source-requirements.yaml` 工件的追踪 Schema；安装器会将其设为项目 Schema。 |
 | `需求追踪验证工具/` | Python 命令行校验器和 Tkinter GUI 源码。 |
 
@@ -87,7 +90,7 @@ python "<目标项目>\.codex\skills\traceablize\scripts\install_traceable_skill
   --project-root "<目标项目>"
 ```
 
-默认会生成三个增强 skill、追踪 Schema 和校验工具。安装器可重复执行；每次都会重新读取目标项目当前的官方 skill，以继承上游更新。
+默认会生成三个增强 skill、一个可选的 `requirement-packaging` skill、追踪 Schema 和校验工具。安装器可重复执行；每次都会重新读取目标项目当前的官方 skill，以继承上游更新。
 
 ### 4. 安装校验器依赖
 
@@ -96,6 +99,8 @@ python -m pip install -r "<目标项目>\需求追踪验证工具\requirements.t
 ```
 
 ## 日常使用
+
+如果需求文档小且结构清晰，跳过分块，直接按下表执行。仅当文档很大、跨多个业务模块或存在结构/编号不一致时，先运行 `requirement-packaging`；审阅 `validation-report.md`、`unresolved-items.md` 后，按 `manifest.yaml` 的依赖顺序逐包把可执行工作包的 `input.md` 交给 `openspec-traceable-propose`，每包完成一次完整生命周期后再处理依赖包。
 
 | OpenSpec 阶段 | 使用方式 |
 |---|---|
@@ -131,7 +136,7 @@ tests/                          # 校验器与 GUI 的单元测试
 
 ## 隐私与发布边界
 
-本仓库只包含合成示例。请勿将真实需求文档、来源标识、版本、映射、验证报告、环境数据、业务代码或打包 EXE 上传到公开仓库。校验报告会包含目标项目的来源标识和标题，分享前必须人工审查。
+本仓库只包含合成示例。请勿将真实需求文档、来源标识、版本、映射、验证报告、环境数据、业务代码或打包 EXE 上传到公开仓库。校验报告会包含目标项目的来源标识和标题，分享前必须人工审查。分块产生的 `input.md`、`package.yaml`、`manifest.yaml`、`validation-report.md` 和 `unresolved-items.md` 同样会保留原文、文件名、行号、哈希、来源 ID 或修订，不能直接公开。
 
 ## 开发验证
 

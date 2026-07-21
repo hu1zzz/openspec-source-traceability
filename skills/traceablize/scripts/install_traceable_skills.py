@@ -226,6 +226,11 @@ def install_skills(project_root: Path, install_tool: bool = True) -> list[str]:
             agents_dir.mkdir(parents=True, exist_ok=True)
             shutil.copy2(agent_file, agents_dir / "openai.yaml")
         installed.append(derivation["target"])
+    packaging_source = asset_root() / "requirement-packaging"
+    if not (packaging_source / "SKILL.md").is_file():
+        raise FileNotFoundError(f"Requirement packaging asset is missing: {packaging_source}")
+    shutil.copytree(packaging_source, destination / "requirement-packaging", dirs_exist_ok=True)
+    installed.append("requirement-packaging")
     if install_tool:
         install_traceability_tool(project_root)
     return installed
