@@ -7,9 +7,13 @@ Keep all compatible behavior from the official propose workflow.
    `traceable-spec-driven` schema.
 2. Before creating the change baseline, build a complete, auditable inventory of the
    supplied requirement document. Extract every identifiable source requirement in
-   document order with its ID, revision, title, section, and normalized-content SHA-256
-   (title plus requirement body, excluding export-only metadata). Persist it in the
-   change directory as `source-inventory.md` or an equivalent auditable record.
+   document order. Persist it in the change directory as `source-inventory.yaml`; this
+   is an internal propose phase, not a separate user command.
+
+   - Assign stable workflow IDs `SRC-001`, `SRC-002`, and so on. Preserve an original
+     identifier only when present as optional `externalId`; revision is optional too.
+   - Record a locator, title or concise content, normalized-content SHA-256, and any
+     extraction limitation. Never require a source-system ID format.
 
    - Treat the entire supplied document as in scope by default. The change name is an
      identifier, not authority to silently discard another section of the document.
@@ -17,7 +21,8 @@ Keep all compatible behavior from the official propose workflow.
      limited scope or the requirement itself states a clear exclusion. Record the scope
      decision, user instruction, and reason; never infer it solely from a heading or
      domain label.
-   - Compare each inventory entry with current main specs by exact `ID@Revision` and
+   - Compare each inventory entry with current main specs by stable `SRC-*` ID and
+     available revision/hash evidence, and
      with prior inventories or archives by normalized-content SHA-256. If content
      changed without a revision increase, register it as `changeType: modified`, set
      `contentChangedWithoutRevision: true`, retain prior/current hashes when available,
@@ -29,7 +34,7 @@ Keep all compatible behavior from the official propose workflow.
 
 3. Scan `openspec/specs/**/*.md`. A source requirement is already covered only when a
    main-spec Requirement has a stable `REQ-*` ID and its `sources` contains the exact
-   source ID and revision. Create `source-requirements.yaml` only for in-scope added,
+   inventory ID plus available revision/hash evidence. Create `source-requirements.yaml` only for in-scope added,
    revision-modified, or content-modified requirements. Preserve source IDs, revisions,
    and content hashes. Initial entries use `status: pending` and `specs: []`. The
    Chinese file header must document every permitted status and change type.
@@ -51,7 +56,7 @@ Keep all compatible behavior from the official propose workflow.
    <!--
    id: REQ-PC-001
    sources:
-     - SwRS-100@1
+     - SRC-001
    -->
    ```
 
@@ -63,8 +68,8 @@ Keep all compatible behavior from the official propose workflow.
    not the routine coverage baseline.
 7. Do not infer links from similar wording and do not fabricate source IDs. A derived
    Requirement uses `sources: []`, `origin: derived`, and a rationale.
-8. After propose, offer the non-gating command:
-   `python "需求追踪验证工具\validate_source_traceability.py" --change <name>`.
+8. Do not invoke a fixed-format parser or infer coverage from a source-ID pattern.
+   `openspec-verify-with-report` performs the later semantic evidence review.
 9. Never create an empty or README-only Spec delta just to complete OpenSpec artifacts.
    If the verified, user-authorized inventory has no in-scope added or modified
    requirements, stop as a no-op and report that no OpenSpec change is needed; do not

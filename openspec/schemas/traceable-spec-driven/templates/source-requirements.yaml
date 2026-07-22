@@ -8,7 +8,7 @@
 # conflict：原始需求之间或需求与现有设计存在冲突，尚未解决；必须填写 reason。
 #
 # 映射规则：
-# 1. 本文件只登记相对当前主规范新增或 Revision 发生变化的需求。
+# 1. 本文件只登记 source-inventory.yaml 中相对当前主规范新增或发生变化的需求。
 # 2. 主规范 sources 中相同 ID、相同 Revision 的需求已覆盖，无需复制。
 # 3. 主规范未覆盖且本次未登记的需求不得静默遗漏。
 # 4. mapped 必须至少关联一个 specs 条目。
@@ -25,7 +25,10 @@ source:
   sha256: "<可选：需求文档 SHA-256>"
 
 requirements:
-  - id: "<原始需求 ID；无 ID 时使用 SRC-001>"
+  - id: "SRC-001"
+    externalId: "<可选：原始需求 ID>"
+    locator: "<source-inventory.yaml 中的来源定位>"
+    contentHash: "<source-inventory.yaml 中的内容 SHA-256>"
     revision: "<原始需求修订号；无修订号时删除本字段>"
     changeType: "<added 或 modified>"
     previousRevision: "<仅 modified 时填写历史修订号>"

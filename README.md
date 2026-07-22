@@ -13,9 +13,9 @@
 本项目在不替换 OpenSpec 的前提下补上这条证据链：
 
 ```text
-原始需求 ──双向映射── source-requirements.yaml ──双向映射── Spec Requirement
-                                                              ↓
-                                              tasks / 代码 / 测试 / 验证报告
+原始需求/工作包 → source-inventory.yaml → source-requirements.yaml → Spec Requirement
+                                                                  ↓
+                                                  tasks / 代码 / 测试 / 验证报告
 ```
 
 ## 每一步做什么、为什么做？
@@ -23,12 +23,13 @@
 | 阶段 | OpenSpec 的作用 | 本项目增加的作用 | 为什么需要它 |
 |---|---|---|---|
 | 需求分块（可选） | 标准流程以一个 change 为单位推进，不规定如何处理超大输入文档。 | 对大型、跨模块或结构/编号不一致的来源文档，先按可独立交付的业务能力拆成工作包，并记录边界、依赖和待确认项。小型且结构清晰的文档跳过此步。 | 避免一次 propose 读取过多无关内容；同时不把仅按页数切开的片段误当成可独立实施的需求。 |
-| Proposal | 明确变更原因、范围和影响面。 | 登记本次新增或修订的来源需求。 | 先确认“为什么做、哪些需求在范围内”，避免漏项。 |
+| 来源清单 | 标准流程不定义原文盘点格式。 | `traceable-propose` 内部自动建立 `source-inventory.yaml`，使用稳定 `SRC-*` ID；原文编号和修订均可缺省。 | 先固定审计对象，避免把某一种外部系统编号格式当成通用需求语法。 |
+| Proposal | 明确变更原因、范围和影响面。 | 从来源清单登记本次新增或修订的来源需求。 | 先确认“为什么做、哪些需求在范围内”，避免漏项。 |
 | Specs | 用 Requirement 与 Scenario 定义应有行为。 | 为每条 Requirement 分配稳定 `REQ-*` ID，并写入来源 ID 与 Revision。 | 需求标题可以改，但稳定 ID 和来源版本可用于追溯影响。 |
 | 验收点对账 | 标准流程不强制拆分来源内部义务。 | 每条新增或修订来源需求拆成 `acceptancePoints`；每点必须映射到 Requirement 和命名 Scenario。 | 防止详细表格、字段或约束只覆盖一部分却被误判为完整覆盖。 |
 | Design | 记录架构、权衡和冲突裁决。 | 保留需求冲突、排除和派生需求的理由。 | 防止工程假设被误写成用户需求。 |
 | Tasks / Apply | 将规范拆成任务并实现。 | 区分代码、集成和真实环境证据。 | “任务勾选”或“单测通过”不等于生产能力已验证。 |
-| Verify / Archive | 检查变更并沉淀规范。 | 检查 YAML 与 Spec 的双向链接、来源覆盖和证据矩阵。 | 发布或归档前可以发现断链、漏覆盖和未验证风险。 |
+| Verify / Archive | 检查变更并沉淀规范。 | agent 直接核验原文、inventory、映射、Spec、代码和测试证据。 | 适用于无编号、编号不统一、表格或自然语言文档；无法可靠读取时明确标记限制。 |
 
 ## 先理解完整流程
 
@@ -37,7 +38,7 @@
         ↓
 安装并调用 $traceablize
         ↓
-生成 3 个追踪增强 skill、Schema、校验工具和分块 skill
+生成 3 个追踪增强 skill、含 source-inventory 的 Schema 和分块 skill
         ↓
 需求文档是否大型、跨模块或结构不一致？
    ├─ 是：可选运行 requirement-packaging，逐包进入 propose
@@ -57,8 +58,7 @@
 | `openspec-traceable-sync-specs` | 将 delta Spec 同步到主 Spec 时保留来源 ID、Revision 和双向映射。 |
 | `openspec-verify-with-report` | 核查任务、Requirement、Scenario、测试和环境证据，并生成持久化验证报告。 |
 | `requirement-packaging` | 可选前置工具：将大型或结构复杂的来源文档整理为可独立执行的工作包；不是日常必经步骤。 |
-| `openspec/schemas/traceable-spec-driven/` | 含 `source-requirements.yaml` 工件的追踪 Schema；安装器会将其设为项目 Schema。 |
-| `需求追踪验证工具/` | Python 命令行校验器和 Tkinter GUI 源码。 |
+| `openspec/schemas/traceable-spec-driven/` | 含 `source-inventory.yaml` 与 `source-requirements.yaml` 工件的追踪 Schema；安装器会将其设为项目 Schema。 |
 
 官方的 `openspec-propose`、`openspec-sync-specs`、`openspec-verify-change` 不会被覆盖。
 
@@ -93,13 +93,7 @@ python "<目标项目>\.codex\skills\traceablize\scripts\install_traceable_skill
   --project-root "<目标项目>"
 ```
 
-默认会生成三个增强 skill、一个可选的 `requirement-packaging` skill、追踪 Schema 和校验工具。安装器可重复执行；每次都会重新读取目标项目当前的官方 skill，以继承上游更新。
-
-### 4. 安装校验器依赖
-
-```powershell
-python -m pip install -r "<目标项目>\需求追踪验证工具\requirements.txt"
-```
+默认会生成三个增强 skill、一个可选的 `requirement-packaging` skill 和追踪 Schema。`traceable-propose` 内部自动创建来源清单，`verify-with-report` 直接进行语义核验；不再安装固定格式校验器或 GUI。安装器可重复执行；每次都会重新读取目标项目当前的官方 skill，以继承上游更新。
 
 ## 日常使用
 
@@ -113,28 +107,14 @@ python -m pip install -r "<目标项目>\需求追踪验证工具\requirements.t
 | 验证覆盖、实现和归档就绪度 | 使用 `openspec-verify-with-report`。 |
 | 归档 | 继续使用常规 `openspec-archive-change`。 |
 
-来源追踪校验也可单独运行：
-
-```powershell
-python "<目标项目>\需求追踪验证工具\validate_source_traceability.py" `
-  --project-root "<目标项目>" `
-  --change <change名称>
-```
-
-GUI：
-
-```powershell
-python "<目标项目>\需求追踪验证工具\traceability_report_gui.py"
-```
 
 ## 仓库结构
 
 ```text
 skills/traceablize/             # 入口 skill：中文主说明，英文辅助说明
 openspec/schemas/               # 可追溯 Schema 与模板
-src/                            # 独立校验器和 GUI 源码
 examples/demo-project/          # 完全合成的演示项目
-tests/                          # 校验器与 GUI 的单元测试
+tests/                          # 安装器与分块功能的单元测试
 ```
 
 ## 隐私与发布边界
@@ -144,7 +124,5 @@ tests/                          # 校验器与 GUI 的单元测试
 ## 开发验证
 
 ```powershell
-python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
-python src/validate_source_traceability.py --project-root examples/demo-project --change demo
 ```

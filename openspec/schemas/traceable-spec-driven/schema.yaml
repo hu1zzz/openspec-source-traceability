@@ -1,7 +1,12 @@
 name: traceable-spec-driven
 version: 1
-description: Traceable workflow - source requirements → proposal → specs → reconciliation → design → tasks
+description: Traceable workflow - source inventory → source requirements → proposal → specs → reconciliation → design → tasks
 artifacts:
+- id: source-inventory
+  generates: source-inventory.yaml
+  description: 原始需求文档的完整、可审计清单
+  template: source-inventory.yaml
+  instruction: 'Create a complete source inventory in document order. Assign stable SRC-* IDs; externalId and revision are optional source metadata. Record locator, normalized-content SHA-256, and extraction limitations.'
 - id: source-requirements
   generates: source-requirements.yaml
   description: 原始需求基线，以及原始需求到 Spec Requirement 的映射
@@ -35,6 +40,7 @@ artifacts:
   instruction: "Create the proposal document that establishes WHY this change is needed.\n\nSections:\n- **Why**: 1-2 sentences on the problem or opportunity. What problem does this solve? Why now?\n- **What Changes**: Bullet list of changes. Be specific about new capabilities, modifications, or removals. Mark breaking changes with **BREAKING**.\n- **Capabilities**: Identify which specs will be created or modified:\n  - **New Capabilities**: List capabilities being introduced. Each becomes a new `specs/<name>/spec.md`. Use kebab-case names (e.g., `user-auth`, `data-export`).\n  - **Modified Capabilities**: List existing capabilities whose REQUIREMENTS are changing. Only include if spec-level behavior changes (not just implementation details). Each needs a delta spec file. Check `openspec/specs/` for existing spec names. Leave empty if no requirement changes.\n- **Impact**: Affected code, APIs, dependencies, or systems.\n\nIMPORTANT: The Capabilities section is critical. It creates the contract\
     \ between\nproposal and specs phases. Research existing specs before filling this in.\nEach capability listed here will need a corresponding spec file.\n\nKeep it concise (1-2 pages). Focus on the \"why\" not the \"how\" -\nimplementation details belong in design.md.\n\nThis is the foundation - specs, design, and tasks all build on this.\n"
   requires:
+  - source-inventory
   - source-requirements
 - id: specs
   generates: specs/**/*.md
@@ -126,6 +132,7 @@ artifacts:
     '
   requires:
   - proposal
+  - source-inventory
   - source-requirements
 - id: design
   generates: design.md
@@ -171,6 +178,7 @@ artifacts:
   requires:
   - proposal
   - specs
+  - source-inventory
   - source-requirements
 - id: tasks
   generates: tasks.md
@@ -225,6 +233,7 @@ artifacts:
   requires:
   - specs
   - design
+  - source-inventory
   - source-requirements
 apply:
   requires:

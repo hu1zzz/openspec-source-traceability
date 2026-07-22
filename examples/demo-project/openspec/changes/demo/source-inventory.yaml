@@ -1,0 +1,15 @@
+source:
+  document: requirements.md
+  revision: demo-v1
+
+requirements:
+  - id: SRC-001
+    externalId: DEMO-CATALOGUE-QUERY
+    locator: "Requirement 1"
+    title: Demo catalogue query
+    contentHash: synthetic-demo-catalogue-query
+  - id: SRC-002
+    externalId: DEMO-NOTIFICATION
+    locator: "Requirement 2"
+    title: Demo notification
+    contentHash: synthetic-demo-notification

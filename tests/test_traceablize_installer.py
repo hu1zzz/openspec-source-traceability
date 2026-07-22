@@ -22,7 +22,7 @@ def load_installer():
 
 
 class TraceablizeInstallerTest(unittest.TestCase):
-    def test_installs_traceable_skills_schema_and_validator_into_project(self):
+    def test_installs_traceable_skills_schema_and_removes_legacy_tool_files(self):
         installer = load_installer()
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp) / "project"
@@ -49,7 +49,7 @@ class TraceablizeInstallerTest(unittest.TestCase):
                 installer.resolve_official_schema = original_resolver
 
             self.assertEqual(result["count"], 4)
-            self.assertTrue(result["toolInstalled"])
+            self.assertIn("legacyToolFilesRemoved", result)
             self.assertEqual((root / "openspec" / "config.yaml").read_text(encoding="utf-8"), "schema: traceable-spec-driven\n")
             for name in (
                 "openspec-traceable-propose",
@@ -59,9 +59,24 @@ class TraceablizeInstallerTest(unittest.TestCase):
             ):
                 self.assertTrue((skills / name / "SKILL.md").is_file())
             self.assertTrue((root / "openspec" / "schemas" / "traceable-spec-driven" / "schema.yaml").is_file())
+            self.assertTrue(
+                (root / "openspec" / "schemas" / "traceable-spec-driven" / "templates" / "source-inventory.yaml").is_file()
+            )
+            generated_propose = (skills / "openspec-traceable-propose" / "SKILL.md").read_text(encoding="utf-8")
+            generated_verify = (skills / "openspec-verify-with-report" / "SKILL.md").read_text(encoding="utf-8")
+            self.assertIn("source-inventory.yaml", generated_propose)
+            self.assertIn("externalId", generated_propose)
+            self.assertIn("fixed-format parser", generated_verify)
             tool = root / "需求追踪验证工具"
-            for name in ("validate_source_traceability.py", "traceability_report_gui.py", "requirements.txt"):
-                self.assertTrue((tool / name).is_file())
+            tool.mkdir(exist_ok=True)
+            legacy_files = ("validate_source_traceability.py", "traceability_report_gui.py", "requirements.txt")
+            for name in legacy_files:
+                (tool / name).write_text("legacy", encoding="utf-8")
+            saved_report = tool / "saved-report.md"
+            saved_report.write_text("keep", encoding="utf-8")
+            installer.install_skills(root)
+            self.assertFalse(any((tool / name).exists() for name in legacy_files))
+            self.assertTrue(saved_report.is_file())
 
 
 if __name__ == "__main__":

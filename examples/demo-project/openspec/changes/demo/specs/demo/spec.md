@@ -3,7 +3,7 @@
 <!--
 id: REQ-DEMO-001
 sources:
-  - SwRS-100@1
+  - SRC-001
 -->
 
 ### Requirement: Demo catalogue query

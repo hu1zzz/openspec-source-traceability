@@ -11,9 +11,9 @@ This repository extends an OpenSpec workflow without replacing official skills. 
 The added traceability chain is:
 
 ```text
-source requirements <-> source-requirements.yaml <-> Spec Requirements
-                                                    ↓
-                                   tasks / code / tests / verification report
+source document/work package → source-inventory.yaml → source-requirements.yaml → Spec Requirements
+                                                                               ↓
+                                                tasks / code / tests / verification report
 ```
 
 For newly handled source requirements, the workflow also records independently testable `acceptancePoints`. A source is `mapped` only when every acceptance point links to an exact Requirement and named Scenario.
@@ -27,7 +27,7 @@ For newly handled source requirements, the workflow also records independently t
 5. Use the generated `openspec-traceable-propose`, `openspec-traceable-sync-specs`, and `openspec-verify-with-report` skills in place of the corresponding propose, sync, and verify stages.
 6. Continue using normal `openspec-apply-change` and `openspec-archive-change` for implementation and archival.
 
-The installer also deploys an optional `requirement-packaging` helper, the `traceable-spec-driven` schema, and a Python CLI validator and Tkinter GUI under `需求追踪验证工具/`. Packaging is not part of the default lifecycle: use it only for large, cross-module, or structurally inconsistent documents. Small, clear documents go straight to `openspec-traceable-propose`. When packaging is used, review `validation-report.md` and `unresolved-items.md`, then process executable `input.md` files in `manifest.yaml` dependency order, completing a full lifecycle for one package before its dependents.
+The installer also deploys an optional `requirement-packaging` helper and the `traceable-spec-driven` schema. Packaging is not part of the default lifecycle: use it only for large, cross-module, or structurally inconsistent documents. Small, clear documents go straight to `openspec-traceable-propose`. That skill creates `source-inventory.yaml` internally before it creates the mapping, proposal, Specs, design, and tasks. `verify-with-report` reviews the source material and evidence semantically; no fixed-format parser or GUI is installed.
 
 ## Installation
 
@@ -38,7 +38,6 @@ Copy-Item "<repository>\skills\traceablize" `
 python "<project>\.codex\skills\traceablize\scripts\install_traceable_skills.py" `
   --project-root "<project>"
 
-python -m pip install -r "<project>\需求追踪验证工具\requirements.txt"
 ```
 
 The project must already contain its official OpenSpec propose, sync-specs, and verify-change skills. The installer rereads them on every run, preserving upstream changes while reapplying the traceability overlays.

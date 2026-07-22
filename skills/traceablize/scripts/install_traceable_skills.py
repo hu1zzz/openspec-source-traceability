@@ -47,8 +47,8 @@ DERIVATIONS = [
 ]
 
 ALLOWED_FRONTMATTER_KEYS = ("license", "metadata", "allowed-tools")
-TOOL_DIRECTORY = "需求追踪验证工具"
-TOOL_FILES = (
+LEGACY_TOOL_DIRECTORY = "需求追踪验证工具"
+LEGACY_TOOL_FILES = (
     "validate_source_traceability.py",
     "traceability_report_gui.py",
     "requirements.txt",
@@ -96,11 +96,12 @@ def apply_schema_overlays(target_schema: Path) -> None:
     overlay = yaml.safe_load(schema_overlay.read_text(encoding="utf-8")) or {}
     artifacts = list(base.get("artifacts") or [])
     artifact_by_id = {artifact.get("id"): artifact for artifact in artifacts}
-    source_artifact = overlay["source_artifact"]
-    artifact_by_id[source_artifact["id"]] = source_artifact
-    ordered_artifacts = [source_artifact]
+    source_artifacts = overlay["source_artifacts"]
+    for source_artifact in source_artifacts:
+        artifact_by_id[source_artifact["id"]] = source_artifact
+    ordered_artifacts = list(source_artifacts)
     for artifact in artifacts:
-        if artifact.get("id") != source_artifact["id"]:
+        if artifact.get("id") not in {item["id"] for item in source_artifacts}:
             ordered_artifacts.append(artifact)
     for artifact in ordered_artifacts:
         override = (overlay.get("requires_overrides") or {}).get(artifact.get("id"))
@@ -183,21 +184,19 @@ def render_skill(source_file: Path, target: str, description: str, overlay_file:
     )
 
 
-def install_traceability_tool(project_root: Path) -> Path:
-    source_dir = asset_root() / "traceability-tool"
-    missing = [name for name in TOOL_FILES if not (source_dir / name).is_file()]
-    if missing:
-        raise FileNotFoundError(
-            f"Traceablize tool assets are incomplete: {', '.join(missing)}"
-        )
-    target_dir = project_root / TOOL_DIRECTORY
-    target_dir.mkdir(parents=True, exist_ok=True)
-    for name in TOOL_FILES:
-        shutil.copy2(source_dir / name, target_dir / name)
-    return target_dir
+def remove_legacy_tool_files(project_root: Path) -> list[str]:
+    """Remove only former managed program files, never reports or the directory."""
+    target_dir = Path(project_root).resolve() / LEGACY_TOOL_DIRECTORY
+    removed: list[str] = []
+    for name in LEGACY_TOOL_FILES:
+        candidate = target_dir / name
+        if candidate.is_file():
+            candidate.unlink()
+            removed.append(str(candidate))
+    return removed
 
 
-def install_skills(project_root: Path, install_tool: bool = True) -> list[str]:
+def install_skills(project_root: Path) -> list[str]:
     project_root = Path(project_root).resolve()
     destination = project_root / ".codex" / "skills"
     destination.mkdir(parents=True, exist_ok=True)
@@ -231,23 +230,22 @@ def install_skills(project_root: Path, install_tool: bool = True) -> list[str]:
         raise FileNotFoundError(f"Requirement packaging asset is missing: {packaging_source}")
     shutil.copytree(packaging_source, destination / "requirement-packaging", dirs_exist_ok=True)
     installed.append("requirement-packaging")
-    if install_tool:
-        install_traceability_tool(project_root)
+    remove_legacy_tool_files(project_root)
     return installed
 
 
-def install_project(project_root: Path, install_tool: bool = True) -> dict[str, object]:
+def install_project(project_root: Path) -> dict[str, object]:
     project_root = Path(project_root).resolve()
     source_schema = resolve_official_schema()
     schema_path = install_traceable_schema(project_root, source_schema)
     schema_configured = configure_traceable_schema(project_root)
-    installed = install_skills(project_root, install_tool=install_tool)
+    legacy_tool_files_removed = remove_legacy_tool_files(project_root)
+    installed = install_skills(project_root)
     return {
         "projectRoot": str(project_root),
         "installed": installed,
         "count": len(installed),
-        "toolInstalled": install_tool,
-        "toolPath": str(project_root / TOOL_DIRECTORY) if install_tool else None,
+        "legacyToolFilesRemoved": legacy_tool_files_removed,
         "schemaSource": str(source_schema),
         "schemaPath": str(schema_path),
         "schemaConfigured": schema_configured,
@@ -268,21 +266,18 @@ def main() -> int:
         help="OpenSpec project root; defaults to the current directory",
     )
     parser.add_argument("--json", action="store_true", help="Print machine-readable output")
-    parser.add_argument(
-        "--skip-tool",
-        action="store_true",
-        help="Generate the three skills without installing the validation tool",
-    )
     args = parser.parse_args()
-    result = install_project(args.project_root, install_tool=not args.skip_tool)
+    result = install_project(args.project_root)
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
         print(f"Traceablize installed {result['count']} skills:")
         for name in result["installed"]:
             print(f"  - {name}")
-        if not args.skip_tool:
-            print(f"Validation tool: {result['toolPath']}")
+        if result["legacyToolFilesRemoved"]:
+            print("Removed legacy validation-tool files:")
+            for path in result["legacyToolFilesRemoved"]:
+                print(f"  - {path}")
         print(f"Schema: {result['schemaPath']}")
     return 0
 

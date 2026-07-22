@@ -11,11 +11,18 @@ official verify workflow.
    proof.
 3. Verify implementation and automated-test evidence separately, citing
    repository-relative `path:line` references.
-4. For traceability, compare `source-requirements.yaml` with delta metadata and use
-   exact ID/revision metadata in `openspec/specs/**/*.md` for unchanged coverage.
+4. For traceability, read the source document or work package, `source-inventory.yaml`,
+   `source-requirements.yaml`, delta and main Specs, implementation, and test evidence.
+   Verify every inventory row semantically with source locator, optional `externalId`,
+   mapping/Spec links, code/test evidence, status, and next action.
+
+   - Do not invoke a fixed-format parser or infer a pass from zero parsed rows.
+   - If a scanned PDF, image, table, missing document, or other format prevents reliable
+     review, record the limitation and use `PARTIAL` or `UNVERIFIED`.
 5. Apply the coverage gate:
 
    ```text
+   inventory source-item count == report source-item rows
    parsed Requirement count == report Requirement rows
    parsed Scenario count    == report Scenario rows
    parsed task count        == report task rows

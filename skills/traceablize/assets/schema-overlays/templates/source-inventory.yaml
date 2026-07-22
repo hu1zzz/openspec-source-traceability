@@ -1,0 +1,16 @@
+# Created automatically by openspec-traceable-propose as its first internal phase.
+# id is the stable workflow ID; externalId and revision are optional source metadata.
+
+source:
+  document: "<source document path or name>"
+  revision: "<optional document revision>"
+  sha256: "<optional document SHA-256>"
+
+requirements:
+  - id: "SRC-001"
+    externalId: "<optional source-system identifier>"
+    revision: "<optional source revision>"
+    locator: "<section, page, table row, or work-package location>"
+    title: "<source requirement title or concise content>"
+    contentHash: "<normalized title/body SHA-256>"
+    limitation: "<optional extraction limitation>"

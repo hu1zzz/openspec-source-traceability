@@ -3,19 +3,23 @@ source:
   revision: demo-v1
 
 requirements:
-  - id: SwRS-100
-    revision: 1
+  - id: SRC-001
+    externalId: DEMO-CATALOGUE-QUERY
+    locator: "Requirement 1"
+    contentHash: synthetic-demo-catalogue-query
     title: Demo catalogue query
     status: mapped
     specs: [REQ-DEMO-001]
     acceptancePoints:
-      - id: ACP-SwRS-100-001
+      - id: ACP-SRC-001-001
         text: Return a filtered catalogue.
         status: mapped
         specs: [REQ-DEMO-001]
         scenarios: [Query succeeds]
-  - id: SwRS-200
-    revision: 1
+  - id: SRC-002
+    externalId: DEMO-NOTIFICATION
+    locator: "Requirement 2"
+    contentHash: synthetic-demo-notification
     title: Demo notification
     status: excluded
     specs: []
