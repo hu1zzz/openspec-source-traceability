@@ -25,6 +25,15 @@ DERIVATIONS = [
         "overlay": "propose.md",
     },
     {
+        "source": "openspec-apply-change",
+        "target": "openspec-traceable-apply-change",
+        "description": (
+            "Use when implementing an OpenSpec change whose tasks must finish local work "
+            "before external dependencies or product decisions can pause progress."
+        ),
+        "overlay": "apply-change.md",
+    },
+    {
         "source": "openspec-sync-specs",
         "target": "openspec-traceable-sync-specs",
         "description": (

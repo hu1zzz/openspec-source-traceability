@@ -77,3 +77,11 @@ Keep all compatible behavior from the official propose workflow.
 10. Before tasks are written, produce a coverage report that lists every source
     requirement and its acceptance-point totals (`mapped`, `uncovered`, `conflict`). A
     source-ID link alone is not evidence of semantic coverage.
+
+## Executable task contract
+
+Every task must be exactly one class: `local`, `external-adapter`, or
+`product-decision`; never mix local implementation with an external integration or
+product decision. Split cross-module work so a local task delivers ports, state model,
+migrations, in-memory/fake adapter, applicable API/UI, automated tests, and verification
+evidence. Put Kafka/RPC/real-service integration in a separate `external-adapter` task.

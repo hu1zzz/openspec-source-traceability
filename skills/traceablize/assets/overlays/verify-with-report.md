@@ -40,3 +40,11 @@ official verify workflow.
    evidence remains.
 9. Never claim all specs implemented unless the coverage gate passes and the final
    result is `PASS`.
+
+## Executable-task audit
+
+Audit every task's execution class and evidence. A mixed execution class is `PARTIAL`.
+An unexplained task split, placeholder-only local task, invalid pause while still-executable
+tasks exist, or missing required completion evidence is `UNVERIFIED` and prevents `PASS`.
+For a split, task-note replacement IDs must be unique, exist in `tasks.md`, and match
+the declared replacement task classes.

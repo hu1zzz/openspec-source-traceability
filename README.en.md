@@ -24,10 +24,10 @@ For newly handled source requirements, the workflow also records independently t
 2. Copy `skills/traceablize/` into `<project>/.codex/skills/traceablize/`.
 3. Invoke `$traceablize`, or run its installer script.
 4. For a large, cross-module, or structurally inconsistent document, optionally run `requirement-packaging`; otherwise go directly to `openspec-traceable-propose`.
-5. Use the generated `openspec-traceable-propose`, `openspec-traceable-sync-specs`, and `openspec-verify-with-report` skills in place of the corresponding propose, sync, and verify stages.
-6. Continue using normal `openspec-apply-change` and `openspec-archive-change` for implementation and archival.
+5. Use the generated `openspec-traceable-propose`, `openspec-traceable-apply-change`, `openspec-traceable-sync-specs`, and `openspec-verify-with-report` skills in place of the corresponding stages.
+6. Continue using normal `openspec-archive-change` for archival.
 
-The installer also deploys an optional `requirement-packaging` helper and the `traceable-spec-driven` schema. Packaging is not part of the default lifecycle: use it only for large, cross-module, or structurally inconsistent documents. Small, clear documents go straight to `openspec-traceable-propose`. That skill creates `source-inventory.yaml` internally before it creates the mapping, proposal, Specs, design, and tasks. `verify-with-report` reviews the source material and evidence semantically; no fixed-format parser or GUI is installed.
+The installer also deploys an optional `requirement-packaging` helper and the `traceable-spec-driven` schema. Packaging is not part of the default lifecycle. `traceable-propose` creates `source-inventory.yaml` internally and separates local work from external adapters and product decisions. `traceable-apply-change` completes local work before it may pause for an external dependency. `verify-with-report` audits task classes, split history, and pause evidence; no fixed-format parser or GUI is installed.
 
 ## Installation
 

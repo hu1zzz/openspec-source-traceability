@@ -38,7 +38,7 @@
         ↓
 安装并调用 $traceablize
         ↓
-生成 3 个追踪增强 skill、含 source-inventory 的 Schema 和分块 skill
+生成 4 个追踪增强 skill、含 source-inventory 的 Schema 和分块 skill
         ↓
 需求文档是否大型、跨模块或结构不一致？
    ├─ 是：可选运行 requirement-packaging，逐包进入 propose
@@ -55,6 +55,7 @@
 | 产物 | 用途 |
 |---|---|
 | `openspec-traceable-propose` | 创建 change 时提取来源需求、生成稳定 `REQ-*` ID，并完成 YAML 与 Spec 双向对账。 |
+| `openspec-traceable-apply-change` | 先完成所有可独立实施的本地任务；将跨模块真实接入单列为外部适配任务，只有没有可执行本地任务时才允许暂停。 |
 | `openspec-traceable-sync-specs` | 将 delta Spec 同步到主 Spec 时保留来源 ID、Revision 和双向映射。 |
 | `openspec-verify-with-report` | 核查任务、Requirement、Scenario、测试和环境证据，并生成持久化验证报告。 |
 | `requirement-packaging` | 可选前置工具：将大型或结构复杂的来源文档整理为可独立执行的工作包；不是日常必经步骤。 |
@@ -93,7 +94,7 @@ python "<目标项目>\.codex\skills\traceablize\scripts\install_traceable_skill
   --project-root "<目标项目>"
 ```
 
-默认会生成三个增强 skill、一个可选的 `requirement-packaging` skill 和追踪 Schema。`traceable-propose` 内部自动创建来源清单，`verify-with-report` 直接进行语义核验；不再安装固定格式校验器或 GUI。安装器可重复执行；每次都会重新读取目标项目当前的官方 skill，以继承上游更新。
+默认会生成四个增强 skill、一个可选的 `requirement-packaging` skill 和追踪 Schema。`traceable-propose` 内部自动创建来源清单并拆分本地/外部/产品决策任务；`traceable-apply-change` 先清空本地可执行任务；`verify-with-report` 直接进行语义核验；不再安装固定格式校验器或 GUI。安装器可重复执行；每次都会重新读取目标项目当前的官方 skill，以继承上游更新。
 
 ## 日常使用
 
@@ -102,7 +103,7 @@ python "<目标项目>\.codex\skills\traceablize\scripts\install_traceable_skill
 | OpenSpec 阶段 | 使用方式 |
 |---|---|
 | 创建 change、proposal、Spec、tasks | 使用 `openspec-traceable-propose`。 |
-| 实现 tasks | 继续使用常规 `openspec-apply-change`。 |
+| 实现 tasks | 使用 `openspec-traceable-apply-change`。 |
 | 同步 delta Spec | 使用 `openspec-traceable-sync-specs`。 |
 | 验证覆盖、实现和归档就绪度 | 使用 `openspec-verify-with-report`。 |
 | 归档 | 继续使用常规 `openspec-archive-change`。 |

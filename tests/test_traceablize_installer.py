@@ -36,7 +36,7 @@ class TraceablizeInstallerTest(unittest.TestCase):
                 (official_schema / "templates" / name).write_text("# template\n", encoding="utf-8")
 
             skills = root / ".codex" / "skills"
-            for name in ("openspec-propose", "openspec-sync-specs", "openspec-verify-change"):
+            for name in ("openspec-propose", "openspec-apply-change", "openspec-sync-specs", "openspec-verify-change"):
                 path = skills / name / "SKILL.md"
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(f"---\nname: {name}\n---\n\n# Official {name}\n", encoding="utf-8")
@@ -48,11 +48,12 @@ class TraceablizeInstallerTest(unittest.TestCase):
             finally:
                 installer.resolve_official_schema = original_resolver
 
-            self.assertEqual(result["count"], 4)
+            self.assertEqual(result["count"], 5)
             self.assertIn("legacyToolFilesRemoved", result)
             self.assertEqual((root / "openspec" / "config.yaml").read_text(encoding="utf-8"), "schema: traceable-spec-driven\n")
             for name in (
                 "openspec-traceable-propose",
+                "openspec-traceable-apply-change",
                 "openspec-traceable-sync-specs",
                 "openspec-verify-with-report",
                 "requirement-packaging",
@@ -63,10 +64,16 @@ class TraceablizeInstallerTest(unittest.TestCase):
                 (root / "openspec" / "schemas" / "traceable-spec-driven" / "templates" / "source-inventory.yaml").is_file()
             )
             generated_propose = (skills / "openspec-traceable-propose" / "SKILL.md").read_text(encoding="utf-8")
+            generated_apply = (skills / "openspec-traceable-apply-change" / "SKILL.md").read_text(encoding="utf-8")
             generated_verify = (skills / "openspec-verify-with-report" / "SKILL.md").read_text(encoding="utf-8")
             self.assertIn("source-inventory.yaml", generated_propose)
             self.assertIn("externalId", generated_propose)
             self.assertIn("fixed-format parser", generated_verify)
+            self.assertIn("external-adapter", generated_propose)
+            self.assertIn("product-decision", generated_propose)
+            self.assertIn("all executable local tasks", generated_apply)
+            self.assertIn("Implementation Paused", generated_apply)
+            self.assertIn("unexplained task split", generated_verify)
             tool = root / "需求追踪验证工具"
             tool.mkdir(exist_ok=True)
             legacy_files = ("validate_source_traceability.py", "traceability_report_gui.py", "requirements.txt")
