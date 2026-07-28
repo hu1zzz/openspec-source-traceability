@@ -28,7 +28,7 @@
 | Specs | 用 Requirement 与 Scenario 定义应有行为。 | 为每条 Requirement 分配稳定 `REQ-*` ID，并写入来源 ID 与 Revision。 | 需求标题可以改，但稳定 ID 和来源版本可用于追溯影响。 |
 | 验收点对账 | 标准流程不强制拆分来源内部义务。 | 每条新增或修订来源需求拆成 `acceptancePoints`；每点必须映射到 Requirement 和命名 Scenario。 | 防止详细表格、字段或约束只覆盖一部分却被误判为完整覆盖。 |
 | Design | 记录架构、权衡和冲突裁决。 | 保留需求冲突、排除和派生需求的理由。 | 防止工程假设被误写成用户需求。 |
-| Tasks / Apply | 将规范拆成任务并实现。 | 区分代码、集成和真实环境证据。 | “任务勾选”或“单测通过”不等于生产能力已验证。 |
+| Tasks / Apply | 将规范拆成任务并实现。 | 任务必须标为 `local`、`external-adapter` 或 `product-decision`；结束前重新检查未完成 local 任务。 | “任务勾选”或“单测通过”不等于生产能力已验证；外部依赖不能让本地工作提前停止。 |
 | Verify / Archive | 检查变更并沉淀规范。 | agent 直接核验原文、inventory、映射、Spec、代码和测试证据。 | 适用于无编号、编号不统一、表格或自然语言文档；无法可靠读取时明确标记限制。 |
 
 ## 先理解完整流程
@@ -55,7 +55,7 @@
 | 产物 | 用途 |
 |---|---|
 | `openspec-traceable-propose` | 创建 change 时提取来源需求、生成稳定 `REQ-*` ID，并完成 YAML 与 Spec 双向对账。 |
-| `openspec-traceable-apply-change` | 先完成所有可独立实施的本地任务；将跨模块真实接入单列为外部适配任务，只有没有可执行本地任务时才允许暂停。 |
+| `openspec-traceable-apply-change` | 先完成所有可独立实施的本地任务；每次结束前重读 `tasks.md`，仍有 `[local]` 即继续实施。真实外部接入单列为外部适配任务。 |
 | `openspec-traceable-sync-specs` | 将 delta Spec 同步到主 Spec 时保留来源 ID、Revision 和双向映射。 |
 | `openspec-verify-with-report` | 核查任务、Requirement、Scenario、测试和环境证据，并生成持久化验证报告。 |
 | `requirement-packaging` | 可选前置工具：将大型或结构复杂的来源文档整理为可独立执行的工作包；不是日常必经步骤。 |
@@ -107,6 +107,14 @@ python "<目标项目>\.codex\skills\traceablize\scripts\install_traceable_skill
 | 同步 delta Spec | 使用 `openspec-traceable-sync-specs`。 |
 | 验证覆盖、实现和归档就绪度 | 使用 `openspec-verify-with-report`。 |
 | 归档 | 继续使用常规 `openspec-archive-change`。 |
+
+### 外部事项的确认移交与汇总
+
+外部依赖不等于可以跳过任务：只要可用接口、Fake、Mock、内存适配器、契约测试或本地环境能够闭环，就必须在当前 change 实现和测试。只有真正无法本地闭环的真实接入或待定产品决策，才可作为候选写入当前 change 的 `external-follow-up.md`。
+
+候选不会自动创建后续 change。你明确确认移交后，apply 才在项目级 `openspec/external-follow-up-registry.yaml` 写入合成 `EXT-*` 条目，并保留原 change、原任务、`SRC-*`、`REQ-*`、验收点和阻塞依赖。之后你显式将该 registry 交给 `openspec-traceable-propose`；它仅消费 `approved` 且未生成的条目，按 `targetChange` 汇总生成 follow-up change。
+
+verify 会把候选、已授权移交和已本地验证分开报告。已授权移交不算已实现；当本地范围已验证且只剩追踪完整的授权移交时，结果为 `PASS_WITH_AUTHORIZED_HANDOFF`。sync 只同步本地已验证行为，并保留 `followUpChange` 与 `externalItems` 追踪元数据。
 
 
 ## 仓库结构

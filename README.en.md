@@ -27,7 +27,15 @@ For newly handled source requirements, the workflow also records independently t
 5. Use the generated `openspec-traceable-propose`, `openspec-traceable-apply-change`, `openspec-traceable-sync-specs`, and `openspec-verify-with-report` skills in place of the corresponding stages.
 6. Continue using normal `openspec-archive-change` for archival.
 
-The installer also deploys an optional `requirement-packaging` helper and the `traceable-spec-driven` schema. Packaging is not part of the default lifecycle. `traceable-propose` creates `source-inventory.yaml` internally and separates local work from external adapters and product decisions. `traceable-apply-change` completes local work before it may pause for an external dependency. `verify-with-report` audits task classes, split history, and pause evidence; no fixed-format parser or GUI is installed.
+The installer also deploys an optional `requirement-packaging` helper and the `traceable-spec-driven` schema. Packaging is not part of the default lifecycle. `traceable-propose` creates `source-inventory.yaml` internally and separates local work from external adapters and product decisions. Before every final response or pause, `traceable-apply-change` rereads `tasks.md`: an unfinished `[local]` task means it must continue rather than stop. `verify-with-report` audits task classes, split history, and pause evidence; no fixed-format parser or GUI is installed.
+
+## Confirmed external handoffs
+
+An external dependency does not justify moving work out of the current change when a usable interface, fake, mock, in-memory adapter, contract test, or local environment can verify it. Only genuinely non-local real integration or an unresolved product decision may become a candidate in the current change's `external-follow-up.md`.
+
+Candidates do not create a change automatically. After explicit user confirmation, apply records a synthetic `EXT-*` item in the project-level `openspec/external-follow-up-registry.yaml`, retaining its original change/task, `SRC-*`, `REQ-*`, acceptance points, and dependency. Explicitly pass that registry to `openspec-traceable-propose` later; it consumes only approved, ungenerated entries and groups them by `targetChange`.
+
+Verification separates candidates, authorized handoffs, and locally verified work. An authorized handoff is not implemented. When all local work is verified and only complete authorized handoffs remain, the result is `PASS_WITH_AUTHORIZED_HANDOFF`; sync still syncs only locally verified behavior and preserves the follow-up metadata.
 
 ## Installation
 

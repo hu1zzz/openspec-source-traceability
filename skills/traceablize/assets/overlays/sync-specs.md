@@ -1,3 +1,6 @@
+Exit code: 0
+Wall time: 2.2 seconds
+Output:
 This extension is mandatory and takes precedence only where it adds traceability rules.
 Keep all compatible behavior from the official sync workflow.
 
@@ -19,3 +22,15 @@ Keep all compatible behavior from the official sync workflow.
    historical audit material.
 8. Report IDs, operations, sources added or preserved, revisions replaced, removals,
    and conflicts.
+9. Sync only locally VERIFIED behavior. A candidate or authorized handoff is not
+   locally VERIFIED merely because it has an `EXT-*` ID, a `targetChange`, or an
+   approved registry status; do not synchronize that unimplemented behavior as
+   complete.
+10. Preserve `followUpChange` and `externalItems` metadata for every transferred
+    external item so the target change and remaining follow-up work stay traceable
+    after synchronization, including the handoff's `EXT-*`, `targetChange`,
+    `generatedChange`, `originalChange`, `originalTask`, source IDs, Requirement IDs,
+    acceptance points, and dependency chain. Report preserved metadata and any attempt
+    to treat a handoff as completed behavior. A `PASS_WITH_AUTHORIZED_HANDOFF` result
+    permits synchronization only for locally `VERIFIED` rows; it does not synchronize
+    the handoff as implemented behavior.

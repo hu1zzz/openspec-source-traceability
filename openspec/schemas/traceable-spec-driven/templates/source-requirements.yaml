@@ -1,3 +1,6 @@
+Exit code: 0
+Wall time: 2.4 seconds
+Output:
 # 源需求状态类型：
 #
 # pending：已识别，尚未分析或映射到 Spec。
@@ -11,7 +14,7 @@
 # 1. 本文件只登记 source-inventory.yaml 中相对当前主规范新增或发生变化的需求。
 # 2. 主规范 sources 中相同 ID、相同 Revision 的需求已覆盖，无需复制。
 # 3. 主规范未覆盖且本次未登记的需求不得静默遗漏。
-# 4. mapped 必须至少关联一个 specs 条目。
+# 4. mapped 必须至少关联一个 specs 条目，且每个 acceptancePoints 条目均为 mapped。
 # 5. pending 和 conflict 表示需求转换尚未完成。
 # 6. partial、excluded、not-applicable 必须填写 reason。
 # 7. Spec Requirement 使用稳定 REQ-* ID，标题修改不得改变 ID。
@@ -27,11 +30,17 @@ source:
 requirements:
   - id: "SRC-001"
     externalId: "<可选：原始需求 ID>"
-    locator: "<source-inventory.yaml 中的来源定位>"
-    contentHash: "<source-inventory.yaml 中的内容 SHA-256>"
+    locator: "<source-inventory.yaml 中对应来源定位>"
+    contentHash: "<source-inventory.yaml 中对应内容 SHA-256>"
     revision: "<原始需求修订号；无修订号时删除本字段>"
     changeType: "<added 或 modified>"
     previousRevision: "<仅 modified 时填写历史修订号>"
     title: "<原始需求标题>"
     status: pending
     specs: []
+    acceptancePoints:
+      - id: "<ACP-来源ID-001>"
+        text: "<一项可独立验收的接口、字段、筛选、状态或约束>"
+        status: pending
+        specs: []
+        scenarios: []
