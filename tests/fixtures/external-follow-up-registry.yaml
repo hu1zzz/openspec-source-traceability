@@ -1,0 +1,21 @@
+Exit code: 0
+Wall time: 2.4 seconds
+Output:
+# 合成外部后续事项 registry 夹具；不得替换为真实项目数据。
+externalItems:
+  - id: "EXT-001"
+    status: approved
+    targetChange: "synthetic-target-change"
+    originalChange: "synthetic-origin-change"
+    originalTask: "1.2"
+    taskClass: "external-adapter"
+    sourceIds:
+      - "SRC-SYN-001"
+    requirementIds:
+      - "REQ-SYN-001"
+    acceptancePoints:
+      - "ACP-SYN-001"
+    dependency: "synthetic external contract"
+    generatedChange: "synthetic-follow-up-change"
+
+
