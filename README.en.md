@@ -27,7 +27,7 @@ For newly handled source requirements, the workflow also records independently t
 5. Use the generated `openspec-traceable-propose`, `openspec-traceable-apply-change`, `openspec-traceable-sync-specs`, and `openspec-verify-with-report` skills in place of the corresponding stages.
 6. Continue using normal `openspec-archive-change` for archival.
 
-The installer also deploys an optional `requirement-packaging` helper and the `traceable-spec-driven` schema. Packaging is not part of the default lifecycle. `traceable-propose` creates `source-inventory.yaml` internally and separates local work from external adapters and product decisions. Before every final response or pause, `traceable-apply-change` rereads `tasks.md`: an unfinished `[local]` task means it must continue rather than stop. `verify-with-report` audits task classes, split history, and pause evidence; no fixed-format parser or GUI is installed.
+The installer also deploys an optional `requirement-packaging` helper and the `traceable-spec-driven` schema. Packaging is not part of the default lifecycle. `traceable-propose` creates `source-inventory.yaml` internally and separates local work from external adapters and product decisions. `traceable-apply-change` completes local work before it may pause for an external dependency. `verify-with-report` audits task classes, split history, and pause evidence; no fixed-format parser or GUI is installed.
 
 ## Confirmed external handoffs
 
