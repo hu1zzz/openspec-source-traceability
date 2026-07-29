@@ -28,7 +28,7 @@
 | Specs | 用 Requirement 与 Scenario 定义应有行为。 | 为每条 Requirement 分配稳定 `REQ-*` ID，并写入来源 ID 与 Revision。 | 需求标题可以改，但稳定 ID 和来源版本可用于追溯影响。 |
 | 验收点对账 | 标准流程不强制拆分来源内部义务。 | 每条新增或修订来源需求拆成 `acceptancePoints`；每点必须映射到 Requirement 和命名 Scenario。 | 防止详细表格、字段或约束只覆盖一部分却被误判为完整覆盖。 |
 | Design | 记录架构、权衡和冲突裁决。 | 保留需求冲突、排除和派生需求的理由。 | 防止工程假设被误写成用户需求。 |
-| Tasks / Apply | 将规范拆成任务并实现。 | 任务必须标为 `local`、`external-adapter` 或 `product-decision`；结束前重新检查未完成 local 任务。 | “任务勾选”或“单测通过”不等于生产能力已验证；外部依赖不能让本地工作提前停止。 |
+| Tasks / Apply | 将规范拆成任务并实现。 | 任务必须标为 `local`、`external-adapter` 或 `product-decision`。 | “任务勾选”或“单测通过”不等于生产能力已验证；外部依赖不能让本地工作提前停止。 |
 | Verify / Archive | 检查变更并沉淀规范。 | agent 直接核验原文、inventory、映射、Spec、代码和测试证据。 | 适用于无编号、编号不统一、表格或自然语言文档；无法可靠读取时明确标记限制。 |
 
 ## 先理解完整流程
@@ -55,7 +55,7 @@
 | 产物 | 用途 |
 |---|---|
 | `openspec-traceable-propose` | 创建 change 时提取来源需求、生成稳定 `REQ-*` ID，并完成 YAML 与 Spec 双向对账。 |
-| `openspec-traceable-apply-change` | 先完成所有可独立实施的本地任务；每次结束前重读 `tasks.md`，仍有 `[local]` 即继续实施。真实外部接入单列为外部适配任务。 |
+| `openspec-traceable-apply-change` | 先完成所有可独立实施的本地任务；真实外部接入单列为外部适配任务。 |
 | `openspec-traceable-sync-specs` | 将 delta Spec 同步到主 Spec 时保留来源 ID、Revision 和双向映射。 |
 | `openspec-verify-with-report` | 核查任务、Requirement、Scenario、测试和环境证据，并生成持久化验证报告。 |
 | `requirement-packaging` | 可选前置工具：将大型或结构复杂的来源文档整理为可独立执行的工作包；不是日常必经步骤。 |

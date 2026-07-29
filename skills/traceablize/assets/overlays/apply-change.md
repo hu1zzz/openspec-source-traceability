@@ -4,24 +4,6 @@ Output:
 This extension is mandatory where it adds executable-task classification, split history,
 or pause controls. Keep all compatible behavior from the official apply workflow.
 
-## Mandatory termination gate
-
-Before any final reply, pause report, or end-of-turn, read `tasks.md` again and apply
-this gate in order:
-
-1. If any unfinished `[local]` task remains, Do not end the implementation. Continue
-   applying the change; an external dependency, a partial implementation, or a completed
-   response turn is not a reason to stop.
-2. A `[local]` task can be checked only with implementation, applicable automated tests,
-   and verification-command evidence. A port, interface, table, mock declaration, or
-   task note alone does not clear the task.
-3. Only after no unfinished `[local]` task remains may an `external-adapter` or
-   `product-decision` block progress. Then use the pause ledger or the confirmed
-   external-follow-up protocol below; never present that state as full implementation.
-4. For a long-running change, maintain a progress ledger in the change directory and
-   resume from it after each response turn. The ledger must show completed tasks,
-   remaining local tasks, blocked external tasks, and the next executable action.
-
 ## Executable-task contract
 
 1. Before implementation, read every change artifact and inventory each incomplete task
@@ -104,6 +86,3 @@ invalid: continue applying the change.
 For each blocked task, identify the named external contract, service, broker, module, or
 product decision required to resume. Do not use a missing repository, an absent runtime,
 or a broad integration concern to hide independent local work.
-
-The Mandatory termination gate applies again immediately before ending the response: a
-non-empty local-task ledger means continue implementation, not `Implementation Paused`.
